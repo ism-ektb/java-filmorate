@@ -10,8 +10,12 @@ import java.time.LocalDate;
 public class User {
     @Builder.Default
     private int id = 0;
+    // Электронная почта автора
     private String email;
+    // Логин автора
     private String login;
+    // Имя Автора
     private String name;
+    // ДР автора
     private LocalDate birthday;
 }
