@@ -49,15 +49,15 @@ public class FilmService {
         return filmStorage.findFilmById(filmId);
     }
 
-   //Добавляем лайк фильму
+    //Добавляем лайк фильму
     //Если фильм или автор не найден выбрасываем NullPointerException
     public void createLike(int filmId, int userId) throws NullPointerException{
         Film film = filmStorage.findFilmById(filmId);
         //проверяем существует ли автор
         userStorage.findUserById(userId);
         Set<Integer> likeFilmUserId = new HashSet(film.getLike());
-       if (!(likeFilmUserId.add(userId))){
-           log.error("автор с id {} ранее добавил лайк фильму с id {}", userId, filmId);
+        if (!(likeFilmUserId.add(userId))) {
+            log.error("автор с id {} ранее добавил лайк фильму с id {}", userId, filmId);
         }
         film.setLike(likeFilmUserId);
         filmStorage.update(film);
@@ -85,14 +85,13 @@ public class FilmService {
     public List<Film> sortFilmByLike(int count){
         return filmStorage.getFilms().stream()
                 .sorted(new FilmByLikeComparator())
-        .limit(count)
+                .limit(count)
                 .collect(Collectors.toList());
     }
 
     class FilmByLikeComparator implements Comparator<Film>{
 
         public int compare(Film a, Film b){
-
             return b.getLike().size() - (a.getLike().size());
         }
 }
