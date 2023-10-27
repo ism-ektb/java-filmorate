@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.*;
 
 @Data
 @Builder
@@ -18,4 +19,6 @@ public class User {
     private String name;
     // ДР автора
     private LocalDate birthday;
+    // список id друзей
+    private Set<Integer> friends;
 }

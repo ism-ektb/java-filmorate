@@ -1,11 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import java.time.LocalDate;
+import java.util.Collections;
 
+@Component
 public class FilmValidator {
 
     // Класс для проверки полей фильма
+    // если список друзей сделавших лайк равен null, ставим пустой список
     public void validation(Film film) throws ValidationException {
 
         if (film.getName() == "")
@@ -20,5 +24,6 @@ public class FilmValidator {
             throw new ValidationException("Продолжительность фильма должна быть положительным числом");
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28)))
             throw new ValidationException("Дата релиза фильма должна быть больше 1895-12-28");
+        if (film.getLike() == null) film.setLike(Collections.emptySet());
     }
 }

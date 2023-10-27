@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 public class Film {
@@ -15,4 +16,6 @@ public class Film {
     private LocalDate releaseDate;
     // Продолжительность фильма
     private long duration;
+    // список пользователей поставивших лайк
+    private Set<Integer> like;
 }
