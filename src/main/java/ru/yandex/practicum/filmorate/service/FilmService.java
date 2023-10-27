@@ -24,34 +24,34 @@ public class FilmService {
     private int nextId = 1;
 
     //возвращаем список фильмов
-    public List<Film> getFilms(){
+    public List<Film> getFilms() {
         return filmStorage.getFilms();
     }
 
     // Добавляем фильм и присваиваем id
-    public Film create(Film film){
+    public Film create(Film film) {
         film.setId(nextId++);
         return filmStorage.create(film);
     }
 
     //Удаляем фильм
-    public void deleteFilm(int filmId){
+    public void deleteFilm(int filmId) {
         filmStorage.delete(filmId);
     }
 
     //Обновляем данные о фильме если фильм отсутствует выбрасываем NullPointerException
-    public Film update(Film film) throws NullPointerException{
+    public Film update(Film film) throws NullPointerException {
         return filmStorage.update(film);
     }
 
     //Ищем фильм по id если фильм отсутствует выбрасываем NullPointerException
-    public Film findFilmById(int filmId) throws NullPointerException{
+    public Film findFilmById(int filmId) throws NullPointerException {
         return filmStorage.findFilmById(filmId);
     }
 
     //Добавляем лайк фильму
     //Если фильм или автор не найден выбрасываем NullPointerException
-    public void createLike(int filmId, int userId) throws NullPointerException{
+    public void createLike(int filmId, int userId) throws NullPointerException {
         Film film = filmStorage.findFilmById(filmId);
         //проверяем существует ли автор
         userStorage.findUserById(userId);
@@ -67,7 +67,7 @@ public class FilmService {
 
     //удаляем лайк фильма
     //Если фильм или автор не найден выбрасываем NullPointerException
-    public void deleteLike(int filmId, int userId) throws NullPointerException{
+    public void deleteLike(int filmId, int userId) throws NullPointerException {
         Film film = filmStorage.findFilmById(filmId);
         //проверяем существует ли автор
         userStorage.findUserById(userId);
@@ -82,16 +82,16 @@ public class FilmService {
     }
 
     //сортируем фильмы по числу лайков и возвращаем первые count фильмы
-    public List<Film> sortFilmByLike(int count){
+    public List<Film> sortFilmByLike(int count) {
         return filmStorage.getFilms().stream()
                 .sorted(new FilmByLikeComparator())
                 .limit(count)
                 .collect(Collectors.toList());
     }
 
-    class FilmByLikeComparator implements Comparator<Film>{
+    class FilmByLikeComparator implements Comparator<Film> {
 
-        public int compare(Film a, Film b){
+        public int compare(Film a, Film b) {
             return b.getLike().size() - (a.getLike().size());
         }
 }
