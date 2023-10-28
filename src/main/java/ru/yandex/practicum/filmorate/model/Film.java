@@ -19,7 +19,7 @@ public class Film {
     // список пользователей поставивших лайк
     private Set<Integer> like;
 
-    public Set<Integer> getLike(){
+    public Set<Integer> getLike() {
         return like != null ? like : new HashSet<>();
     }
 
