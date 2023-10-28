@@ -4,6 +4,11 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
+/**
+ * Интерфейс хранилища экземпляров класса User
+ * если экземпляр с необходимым значением поля id отсутствует, то
+ * выбрасывается исключение NullPointerException
+ */
 public interface UserStorage {
 
     //создание автора

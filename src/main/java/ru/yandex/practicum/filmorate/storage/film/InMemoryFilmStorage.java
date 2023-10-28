@@ -11,9 +11,14 @@ import java.util.Map;
 
 @Component
 @Slf4j
+/**
+ * Сервисный класс для хранения экземпляров класса Film в памяти компьютера
+ * если экземпляр с необходимым значением поля id отсутствует, то
+ * выбрасывается исключение NullPointerException
+ * поддерживается интерфейс FilmStorage
+ */
 public class InMemoryFilmStorage implements FilmStorage {
 
-    //Хранилище фильмов
     private Map<Integer, Film> films = new HashMap<>();
 
     @Override
@@ -24,7 +29,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film findFilmById(int id) throws NullPointerException {
+    public Film findFilmById(int id) {
         if (films.containsKey(id)) {
             log.debug("Найден фильм с id {}", id);
             return films.get(id);
@@ -35,7 +40,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film update(Film film) throws NullPointerException {
+    public Film update(Film film) {
         if (films.containsKey(film.getId())) {
             log.debug("Фильм {} c id {} заменен", film.getName(), film.getId());
             films.replace(film.getId(), film);
@@ -60,6 +65,4 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.debug("Всего фильмов {}", films.size());
         return new ArrayList(films.values());
     }
-
-
 }

@@ -13,64 +13,91 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+/**
+ * Сервисный класс для работы с экземплярами класса User
+ * если методам класса передается id автора которого нет в хранилище,
+ * то выбрасывается ошибка NullPointerException
+ * валидность передаваемых экземпляров класса User не проверяется
+ */
 public class UserService {
 
     @Autowired
     private UserStorage userStorage;
     private int nextId = 1;
 
-    // Создать автора и присвоить id
+    /**
+     * Создаем автора и присваиваем ему id
+     */
     public User create(User user) {
         user.setId(nextId++);
         return userStorage.create(user);
     }
 
+    /**
+     * @return список всех авторов
+     */
     public List<User> getUsers() {
         return userStorage.getAllUser();
     }
 
-    // Обновить данные об авторе
-    public User update(User user) throws NullPointerException {
+    /**
+     * Обновить данные об авторе
+     *
+     * @throws NullPointerException если автор не найден
+     */
+    public User update(User user) {
         return userStorage.update(user);
     }
 
-    // удалить автора
-    public boolean delete(int userId) throws NullPointerException {
+    /**
+     * удалить автора
+     *
+     * @throws NullPointerException если автор не найден
+     */
+    public boolean delete(int userId) {
         return userStorage.delete(userId);
     }
 
-    // Находим автора по Id
-    // NullPointerException если автор не найден
-    public User findUserById(int id) throws NullPointerException {
+    /**
+     * Находим автора по Id
+     *
+     * @throws NullPointerException если автор не найден
+     */
+    public User findUserById(int id) {
         return userStorage.findUserById(id);
     }
 
-    // Добавить друга.
-    // NullPointerException если автор не найден.
-    public void addFriend(int userId, int friendId) throws NullPointerException {
-        User user = userStorage.findUserById(userId);
-        User friend = userStorage.findUserById(friendId);
-        Set<Integer> userList = new HashSet(user.getFriends());
+    /**
+     * Добавить друга.
+     *
+     * @throws NullPointerException если хотя бы один из авторов не найден.
+     */
+    public void addFriend(int userId, int friendId) {
+
+        Set<Integer> userList = new HashSet(userStorage.findUserById(userId).getFriends());
+        //проверяем существует ли автор с friendId
+        userStorage.findUserById(friendId);
         userList.add(friendId);
-        user.setFriends(userList);
-        userList = new HashSet(friend.getFriends());
+        userStorage.findUserById(userId).setFriends(userList);
+        userList = new HashSet(userStorage.findUserById(friendId).getFriends());
         userList.add(userId);
-        friend.setFriends(userList);
-
-
-        userStorage.update(user);
-        userStorage.update(friend);
+        userStorage.findUserById(friendId).setFriends(userList);
         log.info("авторы в id {} и {} подружились", userId, friendId);
     }
 
-    //возвращаем список друзей пользователя, если пользователя нет возвращаем NullPointerException
-    public List<User> getFriends(int userId) throws NullPointerException {
-        User user = userStorage.findUserById(userId);
-        return user.getFriends().stream().map(e -> userStorage.findUserById(e)).collect(Collectors.toList());
+    /**
+     * возвращаем список друзей пользователя, если пользователя нет возвращаем NullPointerException
+     */
+    public List<User> getFriends(int userId) {
+        return userStorage.findUserById(userId).getFriends().stream()
+                .map(e -> userStorage.findUserById(e))
+                .collect(Collectors.toList());
     }
 
-    // Находим общих друзей. Если пользователь отсутствует возвращаем NullPointerException
-    public List<User> getCommonFriends(int userId, int friendId) throws NullPointerException {
+    /**
+     * Находим общих друзей. Если хотя бы один из авторов отсутствует возвращаем NullPointerException
+     */
+    public List<User> getCommonFriends(int userId, int friendId) {
         User user = userStorage.findUserById(userId);
         User friend = userStorage.findUserById(friendId);
         return friend.getFriends().stream()
@@ -79,9 +106,10 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    // Удаление из друзей.
-    // Если пользователь отсутствует выбрасываем NullPointerException
-    public void delete(int userId, int friendId) throws NullPointerException {
+    /**
+     * Удаление из друзей. Если хотя бы один из авторов отсутствует выбрасываем NullPointerException
+     */
+    public void delete(int userId, int friendId) {
         User user = userStorage.findUserById(userId);
         User friend = userStorage.findUserById(friendId);
 

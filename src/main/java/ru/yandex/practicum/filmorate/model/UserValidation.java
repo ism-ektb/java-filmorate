@@ -4,11 +4,12 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.time.LocalDate;
-import java.util.Collections;
 
-// Класс для проверки полей объектов класса User
-// если поле name пустое то возвращается объект в котором в поле name записано значение поля login
-// если список друзей null то возвращает пустой список друзей
+/**
+ * Класс для проверки полей объектов класса User
+ * если поле name пустое то возвращается объект в котором в поле name записано значение поля login
+ */
+
 @Component
 public class UserValidation {
 
@@ -24,7 +25,6 @@ public class UserValidation {
         if (user.getBirthday().isAfter(LocalDate.now()))
             throw new ValidationException("Дата рождения не должна быть в будущем");
         if (user.getName() == "" || user.getName() == null) user.setName(user.getLogin());
-        if (user.getFriends() == null) user.setFriends(Collections.EMPTY_SET);
         return user;
     }
 }
