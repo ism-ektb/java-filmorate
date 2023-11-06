@@ -1,65 +1,120 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmValidator;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
-// контроллер фильмов, добавляет и обновляет фильмы в фильмотеке
+/**
+ * контроллер фильмов, добавляет и обновляет фильмы в фильмотеке и число лайков
+ */
 public class FilmController {
-    private Map<Integer, Film> films = new HashMap<>();
-    private int nextId = 1;
-    FilmValidator filmValidator = new FilmValidator();
 
-    // Выводим общий список фильмов из фильмотеки
+    @Autowired
+    private FilmService filmService;
+    @Autowired
+    private FilmValidator filmValidator;
+
+    /**
+     * Получение общего списка фильмов из фильмотеки
+     */
     @GetMapping("/films")
     public List<Film> findAll() {
-        log.debug("Текущее количество фильмов: {}", films.size());
-        return new ArrayList(films.values());
+        return filmService.getFilms();
     }
 
-    // Добавляем фильм в фильмотеку
+    /**
+     * Добавление фильма в фильмотеку
+     *
+     * @param film
+     * @return
+     * @throws ValidationException - если экземпляр не прошел валидацию
+     */
     @PostMapping(value = "/films")
-    public Film create(@RequestBody Film film) throws ValidationException {
+    public Film create(@RequestBody Film film) {
         try {
             filmValidator.validation(film);
         } catch (ValidationException e) {
             log.error(e.toString());
             throw e;
         }
-        // Присваиваем фильму Id
-        film.setId(nextId++);
-        films.put(film.getId(), film);
-        log.debug("добавлен фильм - {}, Id = {}", film.getName(), film.getId());
-        return film;
-
+        return filmService.create(film);
     }
 
-    //Обновляем характеристики фильма
+    /**
+     * Обновление характеристики фильма
+     *
+     * @param film - экземпляр класса фильм который надо обновить
+     * @return
+     * @throws ValidationException - если экземпляр не прошел валидацию
+     *                             NullPointerException - id экземпляра отсутствует в списке
+     */
     @PutMapping(value = "/films")
-    public Film update(@RequestBody Film film) throws ValidationException {
+    public Film update(@RequestBody Film film) {
         try {
+            //проверка полей экземпляра класса Film,
+            //в случае отрицательного результата выбрасывается ValidationException
             filmValidator.validation(film);
         } catch (ValidationException e) {
             log.error(e.toString());
             throw e;
         }
-        if (films.containsKey(film.getId())) {
-            films.replace(film.getId(), film);
-            log.debug("изменен фильм - {} Id = {}", film.getName(), film.getId());
-        } else {
-            log.error("Фильм с Id = {} отсутствует", film.getId());
-            throw new ValidationException("Фильм с Id = " + film.getId() + "отсутствует");
-        }
-        return film;
+        return filmService.update(film);
+    }
+
+    /**
+     * Поиск фильма по id
+     *
+     * @param id - id фильма
+     * @throws NullPointerException если фильм с id отсутствует
+     */
+    @GetMapping(value = "/films/{id}")
+    public Film findFilmById(@PathVariable int id) {
+        return filmService.findFilmById(id);
+    }
+
+    /**
+     * добавление лайка к фильму
+     *
+     * @param id     - id фильма
+     * @param userId - id пользователя поставившего лайк
+     * @throws NullPointerException если фильм или пользователь с указанными номерами отсутствуют
+     */
+    @PutMapping(value = "/films/{id}/like/{userId}")
+    public void likeFilm(@PathVariable int id, @PathVariable int userId) {
+        filmService.createLike(id, userId);
+    }
+
+    /**
+     * удаление лайка у фильма
+     *
+     * @param id     - id фильма
+     * @param userId - id пользователя удалившего лайк
+     * @throws NullPointerException если фильм или пользователь с указанными номерами отсутствуют
+     */
+    @DeleteMapping(value = "/films/{id}/like/{userId}")
+    public void deleteLikeFilm(@PathVariable int id, @PathVariable int userId) {
+        filmService.deleteLike(id, userId);
+    }
+
+    /**
+     * возвращает фильмы в порядке популярности
+     *
+     * @param count - число фильмов в возвращаемом списке
+     * @return возвращает экземпляры класса Film отсортированный по размеру поля like
+     * @throws ValidationException если параметр count не положительный
+     */
+    @GetMapping(value = "/films/popular")
+    public List<Film> sortFilmByLike(
+            @RequestParam(value = "count", defaultValue = "10", required = false) int count) {
+        if (count < 1) throw new ValidationException("число фильмов должно быть положительным");
+        return filmService.sortFilmByLike(count);
     }
 }

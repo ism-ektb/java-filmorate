@@ -1,11 +1,18 @@
 package ru.yandex.practicum.filmorate.model;
 
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+
 import java.time.LocalDate;
 
+@Component
 public class FilmValidator {
 
-    // Класс для проверки полей фильма
+    /**
+     * Класс для проверки полей экземпляра класса Film
+     *
+     * @throws ValidationException если экземпляр класса Film не прошел проверку
+     */
     public void validation(Film film) throws ValidationException {
 
         if (film.getName() == "")
