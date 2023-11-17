@@ -21,7 +21,6 @@ class FilmorateApplicationTests {
     private MockMvc mockMvc;
     public static final String PATH = "/users";
 
-
     @Test
     void create() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post(PATH)
@@ -37,8 +36,6 @@ class FilmorateApplicationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getContentFromFile("future.json")))
                 .andExpect(MockMvcResultMatchers.status().is(400));
-
-
     }
 
     @Test
@@ -47,18 +44,28 @@ class FilmorateApplicationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getContentFromFile("loginEmpty.json")))
                 .andExpect(MockMvcResultMatchers.status().is(400));
-
-
     }
+
+    @Test
+    void createFilm() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(getContentFromFile("film_in.json")))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(getContentFromFile("film_in.json")));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/films/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(getContentFromFile("film_out.json")));
+    }
+
 
     private String getContentFromFile(String filename) {
         try {
             return Files.readString(ResourceUtils.getFile("classpath:" + filename).toPath(),
                     StandardCharsets.UTF_8);
-
         } catch (IOException e) {
             return "";
-
         }
     }
 
