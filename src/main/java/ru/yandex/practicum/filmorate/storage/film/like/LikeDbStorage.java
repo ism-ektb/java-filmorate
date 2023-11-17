@@ -26,8 +26,7 @@ public class LikeDbStorage implements LikeStorage {
         try {
             jdbcTemplate.update(sqlQuery, filmId, userId);
         } catch (Exception e) {
-            log.error("Ошибка в добавлении лайка от пользователя с id {} в фильму с id ()"
-                    , userId, filmId);
+            log.error("Ошибка в добавлении лайка от пользователя с id {} в фильму с id ()", userId, filmId);
         }
     }
 
