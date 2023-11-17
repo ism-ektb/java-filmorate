@@ -20,15 +20,13 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public List<Mpa> getAll() {
-        return jdbcTemplate.query("SELECT * FROM mpa ORDER BY id"
-                , new MpaMapper());
+        return jdbcTemplate.query("SELECT * FROM mpa ORDER BY id", new MpaMapper());
     }
 
     @Override
     public Mpa getMpaById(Integer id) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM mpa WHERE id = ?"
-                    , new MpaMapper(), id);
+            return jdbcTemplate.queryForObject("SELECT * FROM mpa WHERE id = ?", new MpaMapper(), id);
         } catch (Exception e) {
             log.error("рейтинг mpa с id {} не найден", id);
             throw new NullPointerException();
