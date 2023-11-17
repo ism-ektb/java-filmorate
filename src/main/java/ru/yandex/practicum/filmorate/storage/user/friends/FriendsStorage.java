@@ -15,7 +15,7 @@ public interface FriendsStorage {
      * @param first_friend_id  инициатор дружбы
      * @param second_friend_id пользователь с которым хотят подружиться
      */
-    public void addFriend(Integer first_friend_id, Integer second_friend_id);
+    public void addFriend(Integer firstFriendId, Integer secondFriendId);
 
     /**
      * @return список друзей пользователя с @param id
@@ -25,5 +25,5 @@ public interface FriendsStorage {
     /**
      * удаление пользователя @param second_friend_id из друзей пользователя @param first_friend_id
      */
-    public void deleteFriend(Integer first_friend_id, Integer second_friend_id);
+    public void deleteFriend(Integer firstFriendId, Integer secondFriendId);
 }

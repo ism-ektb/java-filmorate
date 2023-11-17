@@ -18,14 +18,13 @@ public class FriendsDbStorage implements FriendsStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void addFriend(Integer first_friend_id, Integer second_friend_id) {
+    public void addFriend(Integer firstFriendId, Integer secondFriendId) {
         String sqlQuery = "INSERT INTO users_friends (first_user, second_user) " +
                 "values (?, ?)";
         try {
-            jdbcTemplate.update(sqlQuery, first_friend_id, second_friend_id);
-        }catch (Exception e){
-            log.error("Ошибка в добавлении пользователя с id {} в друзья к пользователю с id ()"
-            , second_friend_id, first_friend_id);
+            jdbcTemplate.update(sqlQuery, firstFriendId, secondFriendId);
+        } catch (Exception e) {
+            log.error("Ошибка в добавлении пользователя с id {} в друзья к пользователю с id ()", secondFriendId, firstFriendId);
         }
     }
 
@@ -36,9 +35,9 @@ public class FriendsDbStorage implements FriendsStorage {
     }
 
     @Override
-    public void deleteFriend(Integer first_friend_id, Integer second_friend_id) {
+    public void deleteFriend(Integer firstFriendId, Integer secondFriendId) {
         String sqlQuery = "DELETE FROM users_friends WHERE (first_user = ? AND second_user = ?)";
-        jdbcTemplate.update(sqlQuery, first_friend_id, second_friend_id);
+        jdbcTemplate.update(sqlQuery, firstFriendId, secondFriendId);
 
     }
 }
