@@ -95,19 +95,15 @@ public class UserService {
     public List<User> getFriends(int userId) {
         //проверяем существует ли пользователи
         userStorage.findUserById(userId);
-        return friendsStorage.getFriendsList(userId).stream()
-                .map(e -> userStorage.findUserById(e))
-                .collect(Collectors.toList());
+        return friendsStorage.getFriendsListOfUser(userId);
     }
 
     /**
      * Находим общих друзей. Если хотя бы один из авторов отсутствует возвращаем NullPointerException
      */
-    public List<User> getCommonFriends(int userId, int friendId) {
+    public List<User> getCommonFriends(int firstUserId, int secondUserId) {
 
-        return getFriends(userId).stream()
-                .filter(getFriends(friendId)::contains)
-                .collect(Collectors.toList());
+        return friendsStorage.commonFriends(firstUserId, secondUserId);
     }
 
     /**

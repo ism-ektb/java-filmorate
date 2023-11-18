@@ -51,9 +51,7 @@ public class FilmService {
         List<Film> newList = new ArrayList<>();
         for (Film film : list) {
             int id = film.getId();
-            /**
-             * добавляем данные из дополнительных таблиц
-             */
+            //добавляем данные из дополнительных таблиц
             film.setGenres(filmGenreStorage.getListGenre(id));
             film.setMpa(mpaStorage.getMpaByFilmId(id));
             newList.add(film);
@@ -66,9 +64,7 @@ public class FilmService {
      */
     public Film create(Film film) {
         Film newFilm = filmStorage.create(film);
-        /**
-         * заполняем все поля объектов класса genre
-         */
+        // заполняем все поля объектов класса genre
         filmGenreStorage.updateGenre(newFilm.getId(), new ArrayList<>(film.getGenre()));
         return newFilm;
     }
@@ -86,13 +82,9 @@ public class FilmService {
     public Film update(Film film) {
 
         Film newFilm = filmStorage.update(film);
-        /**
-         * заполняем дополнительную таблицу с парами фильм-жанр
-         */
+        // заполняем дополнительную таблицу с парами фильм-жанр
         filmGenreStorage.updateGenre(film.getId(), new ArrayList<>(film.getGenre()));
-        /**
-         * заполняем все поля объектов класса genre если они не были заполненны
-         */
+        // заполняем все поля объектов класса genre если они не были заполненны
         newFilm.setGenres(new HashSet<>(filmGenreStorage.getListGenre(film.getId())));
         return newFilm;
     }
@@ -106,10 +98,7 @@ public class FilmService {
 
         Film film = filmStorage.findFilmById(filmId);
         int id = film.getId();
-        /**
-         * заполняем из дополнительных тоаблиц объекты классав Mpa и Genre
-         * которые являются полями объекта класса film
-         */
+        // заполняем поля мpa и genre POJO объекта film
         film.setMpa(mpaStorage.getMpaByFilmId(id));
         film.setGenres(new HashSet<>(filmGenreStorage.getListGenre(filmId)));
 
@@ -147,10 +136,7 @@ public class FilmService {
     public List<Film> sortFilmByLike(int count) {
         return likeStorage.sortByLike().stream()
                 .map(f -> {
-                    /**
-                     * заполняем из дополнительных тоаблиц объекты классав Mpa и Genre
-                     * которые являются полями объекта класса film
-                     */
+                    // заполняем поля мpa и genre POJO объекта film
                     int id = f.getId();
                     f.setMpa(mpaStorage.getMpaByFilmId(id));
                     f.setGenres(new HashSet<>(filmGenreStorage.getListGenre(id)));
