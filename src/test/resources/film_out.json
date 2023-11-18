@@ -1,0 +1,12 @@
+{
+  "id": 1,
+  "name": "Film Updated",
+  "releaseDate": "1989-04-17",
+  "description": "New film update decription",
+  "duration": 190,
+  "mpa": {
+    "id": 5,
+    "name": "NC-17"
+  },
+  "genres": [{ "id": 2}]
+}

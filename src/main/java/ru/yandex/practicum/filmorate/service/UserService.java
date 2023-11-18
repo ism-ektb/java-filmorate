@@ -2,14 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.friends.FriendsStorage;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,7 +23,10 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
+    @Qualifier("userDbStorage")
     private UserStorage userStorage;
+    @Autowired
+    private FriendsStorage friendsStorage;
     private int nextId = 1;
 
     /**
@@ -75,35 +79,30 @@ public class UserService {
     public void addFriend(int userId, int friendId) {
 
         Set<Integer> userList = new HashSet(userStorage.findUserById(userId).getFriends());
-        //проверяем существует ли автор с friendId
+        //проверяем существует ли пользователи
+        userStorage.findUserById(userId);
         userStorage.findUserById(friendId);
-        userList.add(friendId);
-        userStorage.findUserById(userId).setFriends(userList);
-        userList = new HashSet(userStorage.findUserById(friendId).getFriends());
-        userList.add(userId);
-        userStorage.findUserById(friendId).setFriends(userList);
-        log.info("авторы в id {} и {} подружились", userId, friendId);
+        friendsStorage.addFriend(userId, friendId);
+
+        log.info("пользователь в id {} добавил в друзья пользователя с id" +
+                " {} подружились", userId, friendId);
     }
 
     /**
      * возвращаем список друзей пользователя, если пользователя нет возвращаем NullPointerException
      */
     public List<User> getFriends(int userId) {
-        return userStorage.findUserById(userId).getFriends().stream()
-                .map(e -> userStorage.findUserById(e))
-                .collect(Collectors.toList());
+        //проверяем существует ли пользователи
+        userStorage.findUserById(userId);
+        return friendsStorage.getFriendsListOfUser(userId);
     }
 
     /**
      * Находим общих друзей. Если хотя бы один из авторов отсутствует возвращаем NullPointerException
      */
-    public List<User> getCommonFriends(int userId, int friendId) {
-        User user = userStorage.findUserById(userId);
-        User friend = userStorage.findUserById(friendId);
-        return friend.getFriends().stream()
-                .filter(user.getFriends()::contains)
-                .map(e -> userStorage.findUserById(e))
-                .collect(Collectors.toList());
+    public List<User> getCommonFriends(int firstUserId, int secondUserId) {
+
+        return friendsStorage.commonFriends(firstUserId, secondUserId);
     }
 
     /**
@@ -113,14 +112,7 @@ public class UserService {
         User user = userStorage.findUserById(userId);
         User friend = userStorage.findUserById(friendId);
 
-        Set<Integer> userList = new HashSet(user.getFriends());
-        userList.remove(friendId);
-        user.setFriends(userList);
-        userList = new HashSet(friend.getFriends());
-        userList.remove(userId);
-        friend.setFriends(userList);
-        userStorage.update(user);
-        userStorage.update(friend);
-        log.debug("авторы в id {} и {} теперь не друзья", userId, friendId);
+        friendsStorage.deleteFriend(userId, friendId);
+        log.info("авторы в id {} и {} теперь не друзья", userId, friendId);
     }
 }
